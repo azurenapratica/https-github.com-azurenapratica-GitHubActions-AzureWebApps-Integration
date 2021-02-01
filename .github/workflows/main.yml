@@ -9,6 +9,8 @@ on:
 env:
  CAMINHO_PROJETO: ./SiteContagem/SiteContagem.csproj 
  CAMINHO_PUBLISH: app 
+ NOME_ARTEFATO: APIContagem
+ NOME_WEBAPP_AZURE: anp-githubactions-exemplo-01
 
 jobs:
  build:
@@ -26,7 +28,7 @@ jobs:
     - name: Upload da Publicação como Artifact
       uses: actions/upload-artifact@v2.2.2
       with:
-        name: APIContagem
+        name: ${{ env.NOME_ARTEFATO }}
         path: ${{ env.CAMINHO_PUBLISH }}     
  
  deploy-dev:
@@ -42,6 +44,19 @@ jobs:
    runs-on: ubuntu-latest
    needs: [build]
    steps:
-    - name: Task 1 Exemplo
-      if: success()
-      run: echo 'Task 1 Exemplo '              
+    - name: Download do Artefato Gerado pelo Job de Build
+      uses: actions/download-artifact@v2.0.8
+      with:
+        name: ${{ env.NOME_ARTEFATO }}
+        path: ${{ env.CAMINHO_PUBLISH }}
+      
+    - name: Login no Azure
+      uses: Azure/login@v1.1
+      with:
+       creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deployment no Azure App Service
+      uses: Azure/webapps-deploy@v2
+      with:
+       app-name: ${{ env.NOME_WEBAPP_AZURE }}
+       package: ${{ env.CAMINHO_PUBLISH }}
