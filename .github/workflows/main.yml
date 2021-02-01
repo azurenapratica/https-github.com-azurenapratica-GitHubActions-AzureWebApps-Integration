@@ -18,8 +18,6 @@ jobs:
     
     - name: "Instala o SDK do .NET Core 3.1 no Runner"
       uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.101
     
     - name: Build do Projeto
       run: dotnet build ${{ env.CAMINHO_PROJETO }} --configuration Release                     
