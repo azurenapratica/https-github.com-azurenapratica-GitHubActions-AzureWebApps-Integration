@@ -4,29 +4,26 @@ on:
  push:
   branches: 
    - master
- schedule:
-  - cron:  '* * * * *'
  workflow_dispatch:
+
+env:
+ CAMINHO_PROJETO: ./SiteContagem/SiteContagem.csproj 
+
 jobs:
  build:
    runs-on: ubuntu-latest
    steps:
-    - name: Task 1 Exemplo
-      run: echo 'Task 1 Exemplo '
+    - name: "Faz Checkout do Código Fonte"
+    - uses: actions/checkout@v2
     
-    - name: Task 2 Exemplo
-      run: echo 'Task 2 Exemplo '
-      
-    - name: Task 3 Exemplo
-      run: echo ${{ github.ref	 }}      
-         
-    - name: Enviar Notificação Sucesso
-      if: success()
-      run: echo 'Enviar Notificação Sucesso'
+    - name: "Instala o SDK do .NET Core 3.1 no Runner"
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
     
-    - name: Enviar Notificação Falha
-      if: failure()
-      run: echo 'Enviar Notificação Erro'                  
+    - name: Build do Projeto
+      run: dotnet build ${{ env.CAMINHO_PROJETO }} --configuration Release                     
+ 
  deploy-dev:
    if: github.ref == 'refs/heads/developer'
    runs-on: ubuntu-latest
