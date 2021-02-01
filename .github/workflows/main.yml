@@ -8,6 +8,7 @@ on:
 
 env:
  CAMINHO_PROJETO: ./SiteContagem/SiteContagem.csproj 
+ CAMINHO_PUBLISH: app 
 
 jobs:
  build:
@@ -20,7 +21,13 @@ jobs:
       uses: actions/setup-dotnet@v1
     
     - name: Build do Projeto
-      run: dotnet build ${{ env.CAMINHO_PROJETO }} --configuration Release                     
+      run: dotnet publish ${{ env.CAMINHO_PROJETO }} -c Release -o ${{ env.CAMINHO_PUBLISH }}
+      
+    - name: Upload da Publicação como Artifact
+      uses: actions/upload-artifact@v2.2.2
+      with:
+        name: APIContagem
+        path: ${{ env.CAMINHO_PUBLISH }}     
  
  deploy-dev:
    if: github.ref == 'refs/heads/developer'
